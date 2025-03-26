@@ -1,0 +1,135 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos do DOM
+    const btnSidebarToggle = document.querySelector('.btn-sidebar-toggle');
+    const sidebar = document.querySelector('.admin-sidebar');
+    const btnNovoItem = document.getElementById('btnNovoItem');
+    const modalNovoItem = new bootstrap.Modal(document.getElementById('modalNovoItem'));
+    const itemImagem = document.getElementById('itemImagem');
+    const previewImage = document.getElementById('previewImage');
+    const btnAdicionarAdicional = document.getElementById('btnAdicionarAdicional');
+    const btnSalvarItem = document.getElementById('btnSalvarItem');
+    
+    // Toggle sidebar em telas pequenas
+    btnSidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+    });
+    
+    // Navegação entre páginas
+    document.querySelectorAll('.sidebar-menu li a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remover active de todos os itens
+            document.querySelectorAll('.sidebar-menu li').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Adicionar active ao item clicado
+            this.parentElement.classList.add('active');
+            
+            // Esconder todas as páginas
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Mostrar página correspondente
+            const target = this.getAttribute('href');
+            document.querySelector(target).classList.add('active');
+            
+            // Atualizar título da página
+            document.getElementById('pageTitle').textContent = this.textContent;
+            
+            // Fechar sidebar em telas pequenas
+            if (window.innerWidth < 992) {
+                sidebar.classList.remove('active');
+            }
+        });
+    });
+    
+    // Preview de imagem ao selecionar arquivo
+    itemImagem.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.addEventListener('load', function() {
+                previewImage.src = this.result;
+                previewImage.classList.remove('d-none');
+            });
+            
+            reader.readAsDataURL(file);
+        } else {
+            previewImage.src = '';
+            previewImage.classList.add('d-none');
+        }
+    });
+    
+    // Adicionar campo de adicional
+    btnAdicionarAdicional.addEventListener('click', function() {
+        const container = document.getElementById('adicionaisContainer');
+        const novoAdicional = document.createElement('div');
+        novoAdicional.className = 'adicional-item mb-2';
+        novoAdicional.innerHTML = `
+            <div class="row">
+                <div class="col-md-5">
+                    <input type="text" class="form-control" placeholder="Nome do adicional" required>
+                </div>
+                <div class="col-md-5">
+                    <input type="number" step="0.01" class="form-control" placeholder="Preço adicional" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm btn-remover-adicional"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+        `;
+        
+        container.insertBefore(novoAdicional, this);
+        
+        // Adicionar evento ao botão de remover
+        novoAdicional.querySelector('.btn-remover-adicional').addEventListener('click', function() {
+            novoAdicional.remove();
+        });
+    });
+    
+    // Abrir modal para novo item
+    btnNovoItem.addEventListener('click', function() {
+        modalNovoItem.show();
+    });
+    
+    // Salvar novo item
+    btnSalvarItem.addEventListener('click', function() {
+        const form = document.getElementById('formNovoItem');
+        if (form.checkValidity()) {
+            // Aqui você implementaria a lógica para salvar o item no banco de dados
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Item salvo!',
+                text: 'O novo item foi adicionado ao cardápio.',
+                timer: 2000
+            }).then(() => {
+                modalNovoItem.hide();
+                form.reset();
+                previewImage.src = '';
+                previewImage.classList.add('d-none');
+                
+                // Limpar adicionais
+                document.querySelectorAll('.adicional-item').forEach(item => {
+                    if (item !== document.querySelector('.adicional-item:first-child')) {
+                        item.remove();
+                    }
+                });
+            });
+        } else {
+            form.reportValidity();
+        }
+    });
+    
+    // Remover adicionais
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-remover-adicional') && 
+            e.target.closest('.adicional-item') !== document.querySelector('.adicional-item:first-child')) {
+            e.target.closest('.adicional-item').remove();
+        }
+    });
+});

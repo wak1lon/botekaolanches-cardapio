@@ -1,0 +1,183 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Simular dados do pedido (na prática, isso viria do carrinho)
+    const pedido = {
+        mesa: 3,
+        itens: [
+            {
+                nome: "Clássico Botekão",
+                preco: 24.90,
+                quantidade: 2,
+                adicionais: ["Bacon"]
+            },
+            {
+                nome: "Coca-Cola",
+                preco: 6.50,
+                quantidade: 2
+            }
+        ],
+        total: (24.90 * 2) + (6.50 * 2)
+    };
+    
+    // Elementos do DOM
+    const pedidoItens = document.getElementById('pedidoItens');
+    const pedidoTotal = document.getElementById('pedidoTotal');
+    const resumoItens = document.getElementById('resumoItens');
+    const resumoTotal = document.getElementById('resumoTotal');
+    const resumoMesa = document.getElementById('resumoMesa');
+    const resumoPagamento = document.getElementById('resumoPagamento');
+    const resumoTroco = document.getElementById('resumoTroco');
+    const resumoTrocoValor = document.getElementById('resumoTrocoValor');
+    const resumoParcelas = document.getElementById('resumoParcelas');
+    const resumoParcelasValor = document.getElementById('resumoParcelasValor');
+    const trocoBox = document.getElementById('trocoBox');
+    const parcelamentoBox = document.getElementById('parcelamentoBox');
+    const pixBox = document.getElementById('pixBox');
+    const btnFinalizarPagamento = document.getElementById('btnFinalizarPagamento');
+    const copiarPix = document.getElementById('copiarPix');
+    
+    // Formas de pagamento
+    document.querySelectorAll('input[name="formaPagamento"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            atualizarFormaPagamento(this.id);
+        });
+    });
+    
+    // Atualizar lista de itens
+    function atualizarItensPedido() {
+        let html = '';
+        let totalItens = 0;
+        
+        pedido.itens.forEach(item => {
+            totalItens += item.quantidade;
+            
+            html += `
+                <div class="pedido-item">
+                    <div class="pedido-item-nome">
+                        ${item.quantidade}x ${item.nome}
+                        ${item.adicionais ? '<small>' + item.adicionais.join(', ') + '</small>' : ''}
+                    </div>
+                    <div class="pedido-item-preco">
+                        R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}
+                    </div>
+                </div>
+            `;
+        });
+        
+        pedidoItens.innerHTML = html;
+        pedidoTotal.textContent = 'R$ ' + pedido.total.toFixed(2).replace('.', ',');
+        
+        // Atualizar resumo
+        resumoItens.textContent = totalItens;
+        resumoTotal.textContent = 'R$ ' + pedido.total.toFixed(2).replace('.', ',');
+        resumoMesa.textContent = pedido.mesa;
+    }
+    
+    // Atualizar forma de pagamento
+    function atualizarFormaPagamento(formaId) {
+        let formaTexto = '';
+        
+        switch(formaId) {
+            case 'dinheiro':
+                formaTexto = 'Dinheiro';
+                trocoBox.style.display = 'block';
+                parcelamentoBox.classList.add('d-none');
+                pixBox.classList.add('d-none');
+                resumoTroco.classList.remove('d-none');
+                resumoParcelas.classList.add('d-none');
+                break;
+            case 'cartaoDebito':
+                formaTexto = 'Cartão de Débito';
+                trocoBox.style.display = 'none';
+                parcelamentoBox.classList.add('d-none');
+                pixBox.classList.add('d-none');
+                resumoTroco.classList.add('d-none');
+                resumoParcelas.classList.add('d-none');
+                break;
+            case 'cartaoCredito':
+                formaTexto = 'Cartão de Crédito';
+                trocoBox.style.display = 'none';
+                parcelamentoBox.classList.remove('d-none');
+                pixBox.classList.add('d-none');
+                resumoTroco.classList.add('d-none');
+                resumoParcelas.classList.remove('d-none');
+                break;
+            case 'pix':
+                formaTexto = 'PIX';
+                trocoBox.style.display = 'none';
+                parcelamentoBox.classList.add('d-none');
+                pixBox.classList.remove('d-none');
+                resumoTroco.classList.add('d-none');
+                resumoParcelas.classList.add('d-none');
+                break;
+        }
+        
+        resumoPagamento.textContent = formaTexto;
+    }
+    
+    // Atualizar troco
+    document.getElementById('valorTroco').addEventListener('input', function() {
+        resumoTrocoValor.textContent = this.value;
+    });
+    
+    // Atualizar parcelas
+    document.getElementById('parcelas').addEventListener('change', function() {
+        resumoParcelasValor.textContent = this.value + 'x';
+    });
+    
+    // Copiar código PIX
+    copiarPix.addEventListener('click', function() {
+        const codigoPix = document.querySelector('#pixBox input').value;
+        navigator.clipboard.writeText(codigoPix);
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Código PIX copiado!',
+            text: 'Cole no seu aplicativo de banco para realizar o pagamento.',
+            timer: 2000
+        });
+    });
+    
+    // Finalizar pagamento
+    btnFinalizarPagamento.addEventListener('click', function() {
+        Swal.fire({
+            title: 'Confirmar pagamento?',
+            text: 'Esta ação registrará o pagamento do pedido.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Confirmar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pagamento confirmado!',
+                    text: 'Obrigado pela sua preferência.',
+                    timer: 2000
+                }).then(() => {
+                    // Aqui você implementaria a lógica para fechar a conta
+                    // e possivelmente imprimir o comprovante
+                    
+                    // Redirecionar para página inicial após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                });
+            }
+        });
+    });
+    
+    // Inicializar
+    atualizarItensPedido();
+    atualizarFormaPagamento('dinheiro');
+    
+    // Simular atualização de status do pedido
+    setTimeout(() => {
+        document.querySelectorAll('.status-item')[1].classList.add('active');
+        document.querySelectorAll('.status-item')[1].querySelector('.status-time').textContent = '18:15';
+    }, 5000);
+    
+    setTimeout(() => {
+        document.querySelectorAll('.status-item')[2].classList.add('active');
+        document.querySelectorAll('.status-item')[2].querySelector('.status-time').textContent = '18:25';
+    }, 10000);
+});

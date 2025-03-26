@@ -1,0 +1,168 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Simular dados do pedido (na prática, isso viria do carrinho)
+    const pedido = {
+        tipo: 'delivery',
+        itens: [
+            {
+                nome: "Clássico Botekão",
+                preco: 24.90,
+                quantidade: 2,
+                adicionais: ["Bacon"]
+            },
+            {
+                nome: "Coca-Cola",
+                preco: 6.50,
+                quantidade: 2
+            }
+        ],
+        total: (24.90 * 2) + (6.50 * 2),
+        taxaEntrega: 5.00
+    };
+    
+    // Elementos do DOM
+    const pedidoItens = document.getElementById('pedidoItens');
+    const pedidoTotal = document.getElementById('pedidoTotal');
+    const resumoItens = document.getElementById('resumoItens');
+    const resumoTotal = document.getElementById('resumoTotal');
+    const resumoTotalComTaxa = document.getElementById('resumoTotalComTaxa');
+    const btnFinalizarPedido = document.getElementById('btnFinalizarPedido');
+    const deliveryCopiarPix = document.getElementById('deliveryCopiarPix');
+    
+    // Formas de pagamento
+    document.querySelectorAll('input[name="formaPagamento"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            atualizarFormaPagamento(this.id);
+        });
+    });
+    
+    // Atualizar lista de itens
+    function atualizarItensPedido() {
+        let html = '';
+        let totalItens = 0;
+        
+        pedido.itens.forEach(item => {
+            totalItens += item.quantidade;
+            
+            html += `
+                <div class="pedido-item">
+                    <div class="pedido-item-nome">
+                        ${item.quantidade}x ${item.nome}
+                        ${item.adicionais ? '<small>' + item.adicionais.join(', ') + '</small>' : ''}
+                    </div>
+                    <div class="pedido-item-preco">
+                        R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}
+                    </div>
+                </div>
+            `;
+        });
+        
+        pedidoItens.innerHTML = html;
+        pedidoTotal.textContent = 'R$ ' + pedido.total.toFixed(2).replace('.', ',');
+        
+        // Atualizar resumo
+        resumoItens.textContent = totalItens;
+        resumoTotal.textContent = 'R$ ' + pedido.total.toFixed(2).replace('.', ',');
+        resumoTotalComTaxa.textContent = 'R$ ' + (pedido.total + pedido.taxaEntrega).toFixed(2).replace('.', ',');
+    }
+    
+    // Atualizar forma de pagamento
+    function atualizarFormaPagamento(formaId) {
+        let formaTexto = '';
+        
+        switch(formaId) {
+            case 'deliveryDinheiro':
+                formaTexto = 'Dinheiro';
+                document.getElementById('deliveryTrocoBox').style.display = 'block';
+                document.getElementById('deliveryPixBox').classList.add('d-none');
+                document.getElementById('resumoTroco').classList.remove('d-none');
+                break;
+            case 'deliveryCartao':
+                formaTexto = 'Cartão na Entrega';
+                document.getElementById('deliveryTrocoBox').style.display = 'none';
+                document.getElementById('deliveryPixBox').classList.add('d-none');
+                document.getElementById('resumoTroco').classList.add('d-none');
+                break;
+            case 'deliveryPix':
+                formaTexto = 'PIX';
+                document.getElementById('deliveryTrocoBox').style.display = 'none';
+                document.getElementById('deliveryPixBox').classList.remove('d-none');
+                document.getElementById('resumoTroco').classList.add('d-none');
+                break;
+        }
+        
+        document.getElementById('resumoPagamento').textContent = formaTexto;
+    }
+    
+    // Atualizar troco
+    document.getElementById('deliveryTroco').addEventListener('input', function() {
+        document.getElementById('resumoTrocoValor').textContent = this.value;
+    });
+    
+    // Copiar código PIX
+    deliveryCopiarPix.addEventListener('click', function() {
+        const codigoPix = document.querySelector('#deliveryPixBox input').value;
+        navigator.clipboard.writeText(codigoPix);
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Código PIX copiado!',
+            text: 'Cole no seu aplicativo de banco para realizar o pagamento.',
+            timer: 2000
+        });
+    });
+    
+    // Finalizar pedido
+    btnFinalizarPedido.addEventListener('click', function() {
+        const form = document.getElementById('formDelivery');
+        if (form.checkValidity()) {
+            Swal.fire({
+                title: 'Confirmar pedido?',
+                text: 'Você confirma os dados e o pedido de delivery?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Aqui você implementaria a lógica para enviar o pedido
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pedido confirmado!',
+                        html: `
+                            <p>Seu pedido foi recebido e está sendo preparado.</p>
+                            <p><strong>Tempo estimado:</strong> 40-50 minutos</p>
+                            <p>Você receberá atualizações por WhatsApp.</p>
+                        `,
+                        confirmButtonText: 'Entendi'
+                    }).then(() => {
+                        // Redirecionar para página inicial após confirmação
+                        window.location.href = 'index.html';
+                    });
+                }
+            });
+        } else {
+            form.reportValidity();
+        }
+    });
+    
+    // Inicializar
+    atualizarItensPedido();
+    atualizarFormaPagamento('deliveryDinheiro');
+    
+    // Simular atualização de status do pedido
+    setTimeout(() => {
+        document.querySelectorAll('.status-item')[1].classList.add('active');
+        document.querySelectorAll('.status-item')[1].querySelector('.status-time').textContent = '18:15';
+    }, 5000);
+    
+    setTimeout(() => {
+        document.querySelectorAll('.status-item')[2].classList.add('active');
+        document.querySelectorAll('.status-item')[2].querySelector('.status-time').textContent = '18:35';
+    }, 10000);
+    
+    setTimeout(() => {
+        document.querySelectorAll('.status-item')[3].classList.add('active');
+        document.querySelectorAll('.status-item')[3].querySelector('.status-time').textContent = '18:55';
+    }, 15000);
+});

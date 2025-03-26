@@ -1,0 +1,338 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Variáveis globais
+    let carrinho = [];
+    let mesaSelecionada = null;
+    let isDelivery = false;
+    
+    // Elementos do DOM
+    const btnAbrirCarrinho = document.getElementById('btnAbrirCarrinho');
+    const btnFecharCarrinho = document.getElementById('btnFecharCarrinho');
+    const carrinhoOverlay = document.getElementById('carrinhoOverlay');
+    const carrinhoBody = document.getElementById('carrinhoBody');
+    const carrinhoTotal = document.getElementById('carrinhoTotal');
+    const carrinhoBadge = document.getElementById('carrinhoBadge');
+    const btnFinalizarPedido = document.getElementById('btnFinalizarPedido');
+    const btnDelivery = document.getElementById('btnDelivery');
+    const modalMesaDelivery = new bootstrap.Modal(document.getElementById('modalMesaDelivery'));
+    const btnConfirmarMesaDelivery = document.getElementById('btnConfirmarMesaDelivery');
+    
+    // Event Listeners
+    btnAbrirCarrinho.addEventListener('click', abrirCarrinho);
+    btnFecharCarrinho.addEventListener('click', fecharCarrinho);
+    btnFinalizarPedido.addEventListener('click', finalizarPedido);
+    btnDelivery.addEventListener('click', selecionarDelivery);
+    btnConfirmarMesaDelivery.addEventListener('click', confirmarMesaDelivery);
+    
+    // Selecionar mesa
+    document.querySelectorAll('.mesa').forEach(mesa => {
+        mesa.addEventListener('click', function() {
+            mesaSelecionada = this.getAttribute('data-mesa');
+            isDelivery = false;
+            mostrarConfirmacaoMesaDelivery();
+        });
+    });
+    
+    // Adicionar produto ao carrinho
+    document.querySelectorAll('.btn-adicionar').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const produtoId = this.getAttribute('data-produto');
+            const cardProduto = this.closest('.card-produto');
+            const produtoNome = cardProduto.querySelector('h3').textContent;
+            const produtoDescricao = cardProduto.querySelector('.descricao').textContent;
+            const produtoPreco = parseFloat(cardProduto.querySelector('.preco').textContent.replace('R$ ', '').replace(',', '.'));
+            const produtoImagem = cardProduto.querySelector('.produto-imagem img').src;
+            
+            // Verificar adicionais
+            let adicionais = [];
+            let precoAdicionais = 0;
+            
+            if (cardProduto.querySelector('.produto-adicionais')) {
+                const checkboxes = cardProduto.querySelectorAll('.produto-adicionais .form-check-input:checked');
+                checkboxes.forEach(checkbox => {
+                    const adicionalNome = checkbox.nextElementSibling.textContent.split(' (+R$ ')[0];
+                    const adicionalPreco = parseFloat(checkbox.nextElementSibling.textContent.match(/\+R\$\s([\d,]+)/)[1].replace(',', '.'));
+                    
+                    adicionais.push({
+                        nome: adicionalNome,
+                        preco: adicionalPreco
+                    });
+                    
+                    precoAdicionais += adicionalPreco;
+                });
+            }
+            
+            const precoTotal = produtoPreco + precoAdicionais;
+            
+            // Verificar se o produto já está no carrinho
+            const produtoExistente = carrinho.find(item => 
+                item.id === produtoId && 
+                JSON.stringify(item.adicionais) === JSON.stringify(adicionais)
+            );
+            
+            if (produtoExistente) {
+                produtoExistente.quantidade++;
+            } else {
+                carrinho.push({
+                    id: produtoId,
+                    nome: produtoNome,
+                    descricao: produtoDescricao,
+                    precoUnitario: produtoPreco,
+                    precoTotal: precoTotal,
+                    imagem: produtoImagem,
+                    adicionais: adicionais,
+                    quantidade: 1
+                });
+            }
+            
+            atualizarCarrinho();
+            abrirCarrinho();
+            
+            // Feedback visual
+            this.textContent = 'Adicionado!';
+            this.style.backgroundColor = 'var(--success-color)';
+            this.style.color = 'white';
+            
+            setTimeout(() => {
+                this.textContent = 'Adicionar';
+                this.style.backgroundColor = 'var(--primary-color)';
+                this.style.color = 'var(--dark-color)';
+            }, 1000);
+        });
+    });
+    
+    // Mostrar adicionais ao passar o mouse
+    document.querySelectorAll('.card-produto').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            const adicionais = this.querySelector('.produto-adicionais');
+            if (adicionais) {
+                adicionais.style.display = 'block';
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            const adicionais = this.querySelector('.produto-adicionais');
+            if (adicionais) {
+                adicionais.style.display = 'none';
+            }
+        });
+    });
+    
+    // Funções
+    function abrirCarrinho() {
+        carrinhoOverlay.classList.add('active');
+    }
+    
+    function fecharCarrinho() {
+        carrinhoOverlay.classList.remove('active');
+    }
+    
+    function atualizarCarrinho() {
+        // Atualizar badge
+        const totalItens = carrinho.reduce((total, item) => total + item.quantidade, 0);
+        carrinhoBadge.textContent = totalItens;
+        
+        // Atualizar lista de itens
+        if (carrinho.length === 0) {
+            carrinhoBody.innerHTML = `
+                <div class="carrinho-vazio">
+                    <p>Seu carrinho está vazio</p>
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+            `;
+            carrinhoTotal.textContent = 'R$ 0,00';
+            return;
+        }
+        
+        let html = '';
+        let total = 0;
+        
+        carrinho.forEach((item, index) => {
+            total += item.precoTotal * item.quantidade;
+            
+            html += `
+                <div class="carrinho-item">
+                    <div class="carrinho-item-imagem">
+                        <img src="${item.imagem}" alt="${item.nome}">
+                    </div>
+                    <div class="carrinho-item-info">
+                        <div class="carrinho-item-nome">${item.nome}</div>
+                        <div class="carrinho-item-preco">R$ ${item.precoTotal.toFixed(2).replace('.', ',')}</div>
+                        
+                        ${item.adicionais.length > 0 ? `
+                            <div class="carrinho-item-adicionais">
+                                ${item.adicionais.map(adicional => `
+                                    <small>+ ${adicional.nome}</small>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="carrinho-item-controle">
+                            <button class="btn-quantidade" data-index="${index}" data-action="decrease">-</button>
+                            <span class="carrinho-item-quantidade">${item.quantidade}</span>
+                            <button class="btn-quantidade" data-index="${index}" data-action="increase">+</button>
+                            <button class="carrinho-item-remover" data-index="${index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        carrinhoBody.innerHTML = html;
+        carrinhoTotal.textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+        
+        // Adicionar eventos aos botões de quantidade e remover
+        document.querySelectorAll('.btn-quantidade').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                const action = this.getAttribute('data-action');
+                
+                if (action === 'increase') {
+                    carrinho[index].quantidade++;
+                } else if (action === 'decrease' && carrinho[index].quantidade > 1) {
+                    carrinho[index].quantidade--;
+                }
+                
+                atualizarCarrinho();
+            });
+        });
+        
+        document.querySelectorAll('.carrinho-item-remover').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                carrinho.splice(index, 1);
+                atualizarCarrinho();
+            });
+        });
+    }
+    
+    function selecionarDelivery() {
+        isDelivery = true;
+        mesaSelecionada = null;
+        mostrarConfirmacaoMesaDelivery();
+    }
+    
+    function mostrarConfirmacaoMesaDelivery() {
+        const modalTitle = document.getElementById('modalMesaDeliveryTitle');
+        const modalBody = document.getElementById('modalMesaDeliveryBody');
+        
+        if (isDelivery) {
+            modalTitle.textContent = 'Pedido de Delivery';
+            modalBody.innerHTML = `
+                <p>Você está fazendo um pedido para delivery. Por favor, confirme para continuar.</p>
+                <div class="mb-3">
+                    <label for="nomeCliente" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="nomeCliente" required>
+                </div>
+                <div class="mb-3">
+                    <label for="telefoneCliente" class="form-label">Telefone</label>
+                    <input type="tel" class="form-control" id="telefoneCliente" required>
+                </div>
+                <div class="mb-3">
+                    <label for="enderecoCliente" class="form-label">Endereço</label>
+                    <textarea class="form-control" id="enderecoCliente" rows="3" required></textarea>
+                </div>
+            `;
+        } else {
+            modalTitle.textContent = 'Confirmação de Mesa';
+            modalBody.innerHTML = `
+                <p>Você selecionou a <strong>Mesa ${mesaSelecionada}</strong>. Confirme para continuar.</p>
+                <div class="mb-3">
+                    <label for="nomeCliente" class="form-label">Nome (opcional)</label>
+                    <input type="text" class="form-control" id="nomeCliente">
+                </div>
+            `;
+        }
+        
+        modalMesaDelivery.show();
+    }
+    
+    function confirmarMesaDelivery() {
+        const nomeCliente = document.getElementById('nomeCliente').value;
+        
+        if (isDelivery) {
+            const telefoneCliente = document.getElementById('telefoneCliente').value;
+            const enderecoCliente = document.getElementById('enderecoCliente').value;
+            
+            if (!telefoneCliente || !enderecoCliente) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Campos obrigatórios',
+                    text: 'Por favor, preencha todos os campos obrigatórios.'
+                });
+                return;
+            }
+            
+            // Aqui você pode salvar os dados do cliente para o pedido
+            console.log('Pedido delivery para:', nomeCliente, telefoneCliente, enderecoCliente);
+        } else {
+            // Aqui você pode salvar o nome do cliente para o pedido na mesa
+            console.log('Pedido na mesa', mesaSelecionada, 'para:', nomeCliente || 'Cliente não identificado');
+        }
+        
+        modalMesaDelivery.hide();
+        Swal.fire({
+            icon: 'success',
+            title: 'Confirmado!',
+            text: isDelivery ? 'Seu pedido de delivery foi confirmado.' : `Mesa ${mesaSelecionada} confirmada.`
+        });
+    }
+    
+    function finalizarPedido() {
+        if (carrinho.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Carrinho vazio',
+                text: 'Adicione itens ao carrinho antes de finalizar.'
+            });
+            return;
+        }
+        
+        if (mesaSelecionada === null && !isDelivery) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Mesa/Delivery não selecionado',
+                text: 'Por favor, selecione uma mesa ou opção de delivery antes de finalizar.'
+            });
+            return;
+        }
+        
+        // Aqui você pode implementar a lógica para enviar o pedido para a cozinha
+        // e integrar com a impressora
+        
+        // Exemplo de como seria o objeto do pedido
+        const pedido = {
+            tipo: isDelivery ? 'delivery' : 'mesa',
+            mesa: mesaSelecionada,
+            itens: carrinho,
+            total: carrinho.reduce((total, item) => total + (item.precoTotal * item.quantidade), 0),
+            data: new Date().toISOString()
+        };
+        
+        console.log('Pedido finalizado:', pedido);
+        
+        // Simular impressão na cozinha
+        imprimirPedidoCozinha(pedido);
+        
+        // Redirecionar para checkout
+        if (isDelivery) {
+            window.location.href = 'delivery.html';
+        } else {
+            window.location.href = 'checkout.html';
+        }
+    }
+    
+    function imprimirPedidoCozinha(pedido) {
+        // Esta função seria implementada no arquivo printer.js
+        // para integrar com a impressora térmica
+        
+        console.log('Imprimindo pedido na cozinha:', pedido);
+        
+        // Aqui você implementaria a lógica real de impressão
+        // usando a API da impressora térmica
+    }
+    
+    // Inicializar carrinho
+    atualizarCarrinho();
+});

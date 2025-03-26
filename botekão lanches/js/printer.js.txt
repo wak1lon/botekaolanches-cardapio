@@ -1,0 +1,85 @@
+function imprimirPedidoCozinha(pedido) {
+    // Verificar se a API de impressão está disponível
+    if (typeof impressoraTermica !== 'undefined') {
+        // Configurar a impressora
+        impressoraTermica.configurar({
+            tamanhoPapel: '80mm',
+            densidade: 15,
+            margem: 5
+        });
+        
+        // Criar conteúdo para impressão
+        let conteudoImpressao = `
+            <center>
+                <b>BOTEKÃO LANCHES</b>
+                <br>${pedido.tipo === 'delivery' ? 'DELIVERY' : 'MESA ' + pedido.mesa}
+                <br>${new Date(pedido.data).toLocaleString()}
+                <br>------------------------------
+            </center>
+        `;
+        
+        // Adicionar itens do pedido
+        pedido.itens.forEach(item => {
+            conteudoImpressao += `
+                <b>${item.quantidade}x ${item.nome}</b>
+                <br>R$ ${item.precoTotal.toFixed(2).replace('.', ',')} cada
+            `;
+            
+            if (item.adicionais.length > 0) {
+                conteudoImpressao += `<br>Adicionais: `;
+                item.adicionais.forEach(adicional => {
+                    conteudoImpressao += `${adicional.nome}, `;
+                });
+                conteudoImpressao = conteudoImpressao.slice(0, -2); // Remover última vírgula
+            }
+            
+            conteudoImpressao += '<br>------------------------------<br>';
+        });
+        
+        // Adicionar total
+        conteudoImpressao += `
+            <right>
+                <b>TOTAL: R$ ${pedido.total.toFixed(2).replace('.', ',')}</b>
+            </right>
+            <br>------------------------------
+            <center>
+                <b>${pedido.tipo === 'delivery' ? 'ENTREGA' : 'RETIRAR NA MESA'}</b>
+                <br>${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}
+            </center>
+            <br><br><br> <!-- Espaço para cortar o papel -->
+        `;
+        
+        // Enviar para impressão
+        impressoraTermica.imprimir(conteudoImpressao)
+            .then(() => {
+                console.log('Pedido impresso com sucesso na cozinha');
+            })
+            .catch(error => {
+                console.error('Erro ao imprimir pedido:', error);
+                // Fallback: mostrar alerta para o garçom
+                alert('Erro na impressora! Por favor, verifique a impressora da cozinha.');
+            });
+    } else {
+        // Fallback para desenvolvimento (não há impressora conectada)
+        console.warn('API de impressora não disponível - Modo de desenvolvimento');
+        console.log('Conteúdo que seria impresso:');
+        console.log(`
+            BOTEKÃO LANCHES
+            ${pedido.tipo === 'delivery' ? 'DELIVERY' : 'MESA ' + pedido.mesa}
+            ${new Date(pedido.data).toLocaleString()}
+            ------------------------------
+            
+            ${pedido.itens.map(item => `
+                ${item.quantidade}x ${item.nome}
+                R$ ${item.precoTotal.toFixed(2)} cada
+                ${item.adicionais.length > 0 ? 'Adicionais: ' + item.adicionais.map(a => a.nome).join(', ') : ''}
+                ------------------------------
+            `).join('\n')}
+            
+            TOTAL: R$ ${pedido.total.toFixed(2)}
+            ------------------------------
+            ${pedido.tipo === 'delivery' ? 'ENTREGA' : 'RETIRAR NA MESA'}
+            ${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}
+        `);
+    }
+}

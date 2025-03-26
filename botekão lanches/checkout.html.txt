@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Botekão Lanches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <img src="assets/logo-botekao.png" alt="Botekão Lanches" class="logo">
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="horario-atendimento">
+                        <p><i class="fas fa-clock"></i> Atendimento: 18:00 às 23:30 | Sáb: 10:30 às 13:30</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="index.html" class="btn btn-outline-light"><i class="fas fa-arrow-left"></i> Voltar ao Cardápio</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo do Checkout -->
+    <section class="checkout">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="checkout-box">
+                        <h2><i class="fas fa-utensils"></i> Seu Pedido - Mesa 3</h2>
+                        <div class="pedido-itens" id="pedidoItens">
+                            <!-- Itens serão preenchidos por JavaScript -->
+                        </div>
+                        <div class="pedido-total">
+                            <span>Total:</span>
+                            <span id="pedidoTotal">R$ 0,00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="checkout-box mt-4">
+                        <h2><i class="fas fa-money-bill-wave"></i> Forma de Pagamento</h2>
+                        <div class="formas-pagamento">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="formaPagamento" id="dinheiro" checked>
+                                <label class="form-check-label" for="dinheiro">
+                                    <i class="fas fa-money-bill-alt"></i> Dinheiro
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="formaPagamento" id="cartaoDebito">
+                                <label class="form-check-label" for="cartaoDebito">
+                                    <i class="fas fa-credit-card"></i> Cartão de Débito
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="formaPagamento" id="cartaoCredito">
+                                <label class="form-check-label" for="cartaoCredito">
+                                    <i class="fas fa-credit-card"></i> Cartão de Crédito
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="formaPagamento" id="pix">
+                                <label class="form-check-label" for="pix">
+                                    <i class="fas fa-qrcode"></i> PIX
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="troco-box mt-3" id="trocoBox">
+                            <label for="valorTroco">Precisa de troco para quanto?</label>
+                            <input type="text" class="form-control" id="valorTroco" placeholder="R$ 0,00">
+                        </div>
+                        
+                        <div class="parcelamento-box mt-3 d-none" id="parcelamentoBox">
+                            <label for="parcelas">Número de parcelas</label>
+                            <select class="form-control" id="parcelas">
+                                <option value="1">1x sem juros</option>
+                                <option value="2">2x sem juros</option>
+                                <option value="3">3x sem juros</option>
+                            </select>
+                        </div>
+                        
+                        <div class="pix-box mt-3 d-none" id="pixBox">
+                            <p>Escaneie o QR Code abaixo para pagar via PIX</p>
+                            <img src="assets/qrcode-pix.png" alt="QR Code PIX" class="img-fluid">
+                            <p class="mt-2">Ou copie o código:</p>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" value="00020126580014BR.GOV.BCB.PIX0136123e4567-e12b-12d1-a456-426655440000520400005303986540510.005802BR5913BotekaoLanches6008Medianeira62070503***6304A3F2" readonly>
+                                <button class="btn btn-primary" type="button" id="copiarPix"><i class="fas fa-copy"></i> Copiar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="checkout-box">
+                        <h2><i class="fas fa-clipboard-check"></i> Resumo</h2>
+                        <div class="resumo-pedido">
+                            <p><strong>Mesa:</strong> <span id="resumoMesa">3</span></p>
+                            <p><strong>Itens:</strong> <span id="resumoItens">0</span></p>
+                            <p><strong>Total:</strong> <span id="resumoTotal">R$ 0,00</span></p>
+                            <p><strong>Pagamento:</strong> <span id="resumoPagamento">Dinheiro</span></p>
+                            <p class="d-none" id="resumoTroco"><strong>Troco para:</strong> <span id="resumoTrocoValor">R$ 0,00</span></p>
+                            <p class="d-none" id="resumoParcelas"><strong>Parcelas:</strong> <span id="resumoParcelasValor">1x</span></p>
+                        </div>
+                        
+                        <button class="btn-finalizar-pagamento" id="btnFinalizarPagamento">
+                            <i class="fas fa-check-circle"></i> Confirmar Pagamento
+                        </button>
+                    </div>
+                    
+                    <div class="checkout-box mt-4">
+                        <h2><i class="fas fa-info-circle"></i> Status do Pedido</h2>
+                        <div class="status-pedido">
+                            <div class="status-item active">
+                                <div class="status-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="status-text">
+                                    <h5>Pedido Recebido</h5>
+                                    <p>Seu pedido foi recebido pela cozinha</p>
+                                </div>
+                                <div class="status-time">18:05</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-icon">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                <div class="status-text">
+                                    <h5>Em Preparo</h5>
+                                    <p>Seu lanche está sendo preparado</p>
+                                </div>
+                                <div class="status-time">--:--</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-icon">
+                                    <i class="fas fa-check-double"></i>
+                                </div>
+                                <div class="status-text">
+                                    <h5>Pronto para Servir</h5>
+                                    <p>Seu pedido está pronto</p>
+                                </div>
+                                <div class="status-time">--:--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Botekão Lanches</h4>
+                    <p>A melhor experiência em lanches artesanais de Medianeira</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h4>Horário de Funcionamento</h4>
+                    <p>Segunda a Sexta: 18:00 - 23:30</p>
+                    <p>Sábado: 10:30 - 13:30</p>
+                    <p>Domingo: Fechado</p>
+                </div>
+                <div class="col-md-4">
+                    <h4>Contato</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Avenida Brasil, 1877 - Centro, Medianeira/PR</p>
+                    <p><i class="fas fa-phone"></i> (45) 3264-2245</p>
+                    <p><i class="fas fa-envelope"></i> contato@botekaolanches.com.br</p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="copyright">&copy; 2025 Botekão Lanches. Todos os direitos reservados.</p>
+                    <p class="dev-credits">Desenvolvido por <a href="#" target="_blank">Wakilon Ferreira</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/checkout.js"></script>
+</body>
+</html>

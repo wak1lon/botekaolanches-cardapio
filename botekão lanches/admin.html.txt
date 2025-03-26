@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Botekão Lanches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <img src="../assets/logo-botekao-white.png" alt="Botekão Lanches" class="sidebar-logo">
+                <h3>Painel Administrativo</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="#dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#cardapio"><i class="fas fa-utensils"></i> Gerenciar Cardápio</a></li>
+                <li><a href="#pedidos"><i class="fas fa-clipboard-list"></i> Pedidos</a></li>
+                <li><a href="#mesas"><i class="fas fa-chair"></i> Mesas</a></li>
+                <li><a href="#delivery"><i class="fas fa-motorcycle"></i> Delivery</a></li>
+                <li><a href="#relatorios"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="#configuracoes"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="#banners"><i class="fas fa-image"></i> Banners</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="../index.html" class="btn btn-sm btn-outline-light"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-content">
+            <!-- Top Bar -->
+            <div class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="btn-sidebar-toggle"><i class="fas fa-bars"></i></button>
+                    <h4 id="pageTitle">Dashboard</h4>
+                </div>
+                <div class="topbar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="admin-profile">
+                        <img src="../assets/admin-avatar.jpg" alt="Admin">
+                        <span>Administrador</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="admin-main">
+                <div id="dashboard" class="page-content active">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-primary">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>24</h3>
+                                    <p>Pedidos Hoje</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-success">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>R$ 1.245,50</h3>
+                                    <p>Faturamento</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-warning">
+                                    <i class="fas fa-motorcycle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>8</h3>
+                                    <p>Delivery</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-danger">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>2</h3>
+                                    <p>Pendentes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Pedidos Recentes</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Mesa/Delivery</th>
+                                                    <th>Itens</th>
+                                                    <th>Total</th>
+                                                    <th>Status</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>42</td>
+                                                    <td>Mesa 3</td>
+                                                    <td>3</td>
+                                                    <td>R$ 56,20</td>
+                                                    <td><span class="badge bg-success">Pago</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>41</td>
+                                                    <td>Delivery</td>
+                                                    <td>2</td>
+                                                    <td>R$ 38,90</td>
+                                                    <td><span class="badge bg-warning">Em Rota</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>40</td>
+                                                    <td>Mesa 5</td>
+                                                    <td>4</td>
+                                                    <td>R$ 72,50</td>
+                                                    <td><span class="badge bg-danger">Pendente</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Status das Mesas</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mesas-status">
+                                        <div class="mesa-status-item livre">Mesa 1 <span>Livre</span></div>
+                                        <div class="mesa-status-item ocupada">Mesa 2 <span>Ocupada</span></div>
+                                        <div class="mesa-status-item ocupada">Mesa 3 <span>Ocupada</span></div>
+                                        <div class="mesa-status-item livre">Mesa 4 <span>Livre</span></div>
+                                        <div class="mesa-status-item ocupada">Mesa 5 <span>Ocupada</span></div>
+                                        <div class="mesa-status-item livre">Mesa 6 <span>Livre</span></div>
+                                        <div class="mesa-status-item livre">Mesa 7 <span>Livre</span></div>
+                                        <div class="mesa-status-item livre">Mesa 8 <span>Livre</span></div>
+                                        <div class="mesa-status-item livre">Mesa 9 <span>Livre</span></div>
+                                        <div class="mesa-status-item livre">Mesa 10 <span>Livre</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gerenciar Cardápio -->
+                <div id="cardapio" class="page-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Gerenciar Cardápio</h5>
+                            <button class="btn btn-primary btn-sm" id="btnNovoItem"><i class="fas fa-plus"></i> Novo Item</button>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs" id="cardapioTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="hamburgues-tab" data-bs-toggle="tab" data-bs-target="#admin-hamburgues" type="button">Hambúrgueres</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="bebidas-tab" data-bs-toggle="tab" data-bs-target="#admin-bebidas" type="button">Bebidas</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="porcoes-tab" data-bs-toggle="tab" data-bs-target="#admin-porcoes" type="button">Porções</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="sobremesas-tab" data-bs-toggle="tab" data-bs-target="#admin-sobremesas" type="button">Sobremesas</button>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content mt-3" id="cardapioTabContent">
+                                <div class="tab-pane fade show active" id="admin-hamburgues">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Nome</th>
+                                                    <th>Descrição</th>
+                                                    <th>Preço</th>
+                                                    <th>Status</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>Clássico Botekão</td>
+                                                    <td>Pão brioche, hambúrguer 180g, queijo, alface, tomate e molho especial</td>
+                                                    <td>R$ 24,90</td>
+                                                    <td><span class="badge bg-success">Ativo</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2</td>
+                                                    <td>Bacon Explosion</td>
+                                                    <td>Pão australiano, 2 hambúrgueres 150g, bacon crocante, cheddar e molho barbecue</td>
+                                                    <td>R$ 32,90</td>
+                                                    <td><span class="badge bg-success">Ativo</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div class="tab-pane fade" id="admin-bebidas">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Nome</th>
+                                                    <th>Descrição</th>
+                                                    <th>Preço</th>
+                                                    <th>Status</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>10</td>
+                                                    <td>Coca-Cola</td>
+                                                    <td>Lata 350ml</td>
+                                                    <td>R$ 6,50</td>
+                                                    <td><span class="badge bg-success">Ativo</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>11</td>
+                                                    <td>Guaraná Antarctica</td>
+                                                    <td>Lata 350ml</td>
+                                                    <td>R$ 5,90</td>
+                                                    <td><span class="badge bg-success">Ativo</span></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <!-- Outras categorias... -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal para novo item -->
+                <div class="modal fade" id="modalNovoItem" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Adicionar Novo Item ao Cardápio</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="formNovoItem">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="itemCategoria" class="form-label">Categoria</label>
+                                                <select class="form-select" id="itemCategoria" required>
+                                                    <option value="">Selecione...</option>
+                                                    <option value="hamburguer">Hambúrguer</option>
+                                                    <option value="bebida">Bebida</option>
+                                                    <option value="porcao">Porção</option>
+                                                    <option value="sobremesa">Sobremesa</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="itemNome" class="form-label">Nome do Item</label>
+                                                <input type="text" class="form-control" id="itemNome" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="itemDescricao" class="form-label">Descrição</label>
+                                                <textarea class="form-control" id="itemDescricao" rows="3"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="itemPreco" class="form-label">Preço (R$)</label>
+                                                <input type="number" step="0.01" class="form-control" id="itemPreco" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="itemImagem" class="form-label">Imagem do Produto</label>
+                                                <input type="file" class="form-control" id="itemImagem" accept="image/*">
+                                                <small class="text-muted">Recomendado: 1080x1350 pixels</small>
+                                                <div class="image-preview mt-2" id="imagePreview">
+                                                    <img src="" alt="Preview" class="img-fluid d-none" id="previewImage">
+                                                </div>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="itemDestaque">
+                                                <label class="form-check-label" for="itemDestaque">Destacar este item</label>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="itemStatus" checked>
+                                                <label class="form-check-label" for="itemStatus">Ativo no cardápio</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="adicionais-container" id="adicionaisContainer">
+                                        <h6>Adicionais</h6>
+                                        <div class="adicional-item mb-2">
+                                            <div class="row">
+                                                <div class="col-md-5">
+                                                    <input type="text" class="form-control" placeholder="Nome do adicional">
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <input type="number" step="0.01" class="form-control" placeholder="Preço adicional">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-danger btn-sm btn-remover-adicional"><i class="fas fa-times"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-secondary" id="btnAdicionarAdicional"><i class="fas fa-plus"></i> Adicionar Opção</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="btnSalvarItem">Salvar Item</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Outras páginas do painel... -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/admin.js"></script>
+</body>
+</html>
